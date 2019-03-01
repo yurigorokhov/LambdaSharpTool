@@ -60,6 +60,7 @@ namespace LambdaSharp.Tool {
 
         //--- Class Fields ---
         public static VerboseLevel VerboseLevel = Tool.VerboseLevel.Exceptions;
+        public static bool EnableAnsiConsole = true;
         private static IList<(string Message, Exception Exception)> _errors = new List<(string Message, Exception Exception)>();
 
         //--- Class Properties ---

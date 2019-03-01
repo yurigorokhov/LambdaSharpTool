@@ -84,6 +84,9 @@ If the argument refers to a module definition, the `deploy` command invokes the 
 <dt><code>--verbose|-V:&lt;LEVEL&gt;</code></dt>
 <dd>(optional) Show verbose output (0=quiet, 1=normal, 2=detailed, 3=exceptions)</dd>
 
+<dt><code>--no-ansi</code></dt>
+<dd>Disable ANSI terminal output</dd>
+
 </dl>
 
 ## Examples

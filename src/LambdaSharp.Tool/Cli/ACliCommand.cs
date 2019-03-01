@@ -47,6 +47,9 @@ namespace LambdaSharp.Tool.Cli {
         public static CommandOption AddTierOption(CommandLineApplication cmd)
             => cmd.Option("--tier|-T <NAME>", "(optional) Name of deployment tier (default: LAMBDASHARP_TIER environment variable)", CommandOptionType.SingleValue);
 
+        public static CommandOption AddNoAnsiOption(CommandLineApplication cmd)
+            => cmd.Option("--no-ansi", "Disable ANSI terminal output", CommandOptionType.NoValue);
+
         public static string ReadResource(string resourceName, IDictionary<string, string> substitutions = null) {
             string result;
             var assembly = typeof(ACliCommand).Assembly;

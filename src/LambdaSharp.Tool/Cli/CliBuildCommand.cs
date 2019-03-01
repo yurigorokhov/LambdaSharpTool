@@ -177,8 +177,14 @@ namespace LambdaSharp.Tool.Cli {
                 // misc options
                 var dryRunOption = AddDryRunOption(cmd);
                 var initSettingsCallback = CreateSettingsInitializer(cmd, requireDeploymentTier: false);
+                var noAnsiOutputOption = AddNoAnsiOption(cmd);
                 cmd.OnExecute(async () => {
                     Console.WriteLine($"{app.FullName} - {cmd.Description}");
+
+                    // check if ANSI console output needs to be disabled
+                    if(noAnsiOutputOption.HasValue()) {
+                        Settings.EnableAnsiConsole = false;
+                    }
 
                     // read settings and validate them
                     var settings = await initSettingsCallback();
@@ -255,8 +261,14 @@ namespace LambdaSharp.Tool.Cli {
                 // misc options
                 var dryRunOption = AddDryRunOption(cmd);
                 var initSettingsCallback = CreateSettingsInitializer(cmd, requireDeploymentTier: false);
+                var noAnsiOutputOption = AddNoAnsiOption(cmd);
                 cmd.OnExecute(async () => {
                     Console.WriteLine($"{app.FullName} - {cmd.Description}");
+
+                    // check if ANSI console output needs to be disabled
+                    if(noAnsiOutputOption.HasValue()) {
+                        Settings.EnableAnsiConsole = false;
+                    }
 
                     // read settings and validate them
                     var settings = await initSettingsCallback();
@@ -361,8 +373,14 @@ namespace LambdaSharp.Tool.Cli {
                 var dryRunOption = AddDryRunOption(cmd);
                 var outputCloudFormationPathOption = AddCloudFormationOutputOption(cmd);
                 var initSettingsCallback = CreateSettingsInitializer(cmd);
+                var noAnsiOutputOption = AddNoAnsiOption(cmd);
                 cmd.OnExecute(async () => {
                     Console.WriteLine($"{app.FullName} - {cmd.Description}");
+
+                    // check if ANSI console output needs to be disabled
+                    if(noAnsiOutputOption.HasValue()) {
+                        Settings.EnableAnsiConsole = false;
+                    }
 
                     // read settings and validate them
                     var settings = await initSettingsCallback();
