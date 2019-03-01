@@ -1,12 +1,14 @@
 ﻿![λ#](Docs/LambdaSharp_v2_small.png)
 
-# LambdaSharp (v0.5.0.2) - Serverless .NET on AWS
+# LambdaSharp (v0.5.0.3) - Serverless .NET on AWS
 
 **[Read what's new in the 0.5 "Eurytus" release.](Docs/ReleaseNotes-Eurytus.md)**
 
 λ# is a CLI and a framework for rapid serverless application development. λ# uses a simple declarative syntax to generate sophisticated CloudFormation templates that provide simple, yet flexible, deployment options.
 
 The objective of λ# is to accelerate the innovation velocity of serverless solutions. It allows developers to focus on solving business problems while deploying scalable, observable solutions that follow DevOps best practices.
+
+![λ# CLI](Docs/LashAnsiColor-WIP.gif)
 
 ## Install λ# CLI
 
@@ -95,6 +97,7 @@ namespace MySampleModule.MyFunction {
 1. [λ# — v0.5 Release Notes](https://medium.com/mindtouch-engineering/%CE%BB-news-0-5-rc1-released-906bdfc059a)
 1. [λ# — v0.5.0.1 Release Notes](https://medium.com/mindtouch-engineering/%CE%BB-v0-5-0-1-release-notes-f07966ace1c5)
 1. [λ# — v0.5.0.2 Release Notes](https://medium.com/mindtouch-engineering/%CE%BB-v0-5-0-2-release-notes-69458b35bddd)
+1. [λ# — v0.5.0.3 Release Notes](#)
 1. [λ# — Constructors/Destructors for CloudFormation](https://medium.com/@wikinaut/constructors-destructors-for-cloudformation-stacks-233de1b1fcca)
 
 ### Samples
