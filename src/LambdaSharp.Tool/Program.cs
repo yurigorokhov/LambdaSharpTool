@@ -80,9 +80,9 @@ namespace LambdaSharp.Tool {
                     try {
                         app.Execute(args);
                     } catch(CommandParsingException e) {
-                        AddError(e.Message);
+                        LogError(e.Message);
                     } catch(Exception e) {
-                        AddError(e);
+                        LogError(e);
                     }
                     if(Settings.HasErrors) {
                         Console.WriteLine();

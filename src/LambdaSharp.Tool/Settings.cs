@@ -90,14 +90,14 @@ namespace LambdaSharp.Tool {
             }
         }
 
-        public static void AddWarning(string message)
+        public static void LogWarn(string message)
             => Console.WriteLine("WARNING: " + message);
 
-        public static void AddError(string message, Exception exception = null)
+        public static void LogError(string message, Exception exception = null)
             => _errors.Add((Message: message, Exception: exception));
 
-        public static void AddError(Exception exception)
-            => AddError($"internal error: {exception.Message}", exception);
+        public static void LogError(Exception exception)
+            => LogError($"internal error: {exception.Message}", exception);
 
         //--- Properties ---
         public VersionInfo ToolVersion { get; set; }

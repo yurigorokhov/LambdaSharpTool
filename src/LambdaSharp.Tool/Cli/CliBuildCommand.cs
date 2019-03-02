@@ -78,7 +78,7 @@ namespace LambdaSharp.Tool.Cli {
 
         public static Dictionary<string, string> ReadInputParametersFiles(Settings settings, string filename) {
             if(!File.Exists(filename)) {
-                AddError("cannot find parameters file");
+                LogError("cannot find parameters file");
                 return null;
             }
             switch(Path.GetExtension(filename).ToLowerInvariant()) {
@@ -110,14 +110,14 @@ namespace LambdaSharp.Tool.Cli {
                                 try {
                                     return settings.KmsClient.DescribeKeyAsync(keyId).Result.KeyMetadata.Arn;
                                 } catch(Exception e) {
-                                    AddError($"failed to resolve key alias: {keyId}", e);
+                                    LogError($"failed to resolve key alias: {keyId}", e);
                                     return null;
                                 }
                             }
                             try {
                                 return settings.KmsClient.DescribeKeyAsync($"alias/{keyId}").Result.KeyMetadata.Arn;
                             } catch(Exception e) {
-                                AddError($"failed to resolve key alias: {keyId}", e);
+                                LogError($"failed to resolve key alias: {keyId}", e);
                                 return null;
                             }
                         }
@@ -135,19 +135,19 @@ namespace LambdaSharp.Tool.Cli {
                             result.Add(key, string.Join(",", values.OfType<string>()));
                             break;
                         default:
-                            AddError($"parameter '{input.Key}' have an invalid value");
+                            LogError($"parameter '{input.Key}' have an invalid value");
                             break;
                         }
                     }
                     return result;
                 } catch(YamlDotNet.Core.YamlException e) {
-                    AddError($"parsing error near {e.Message}");
+                    LogError($"parsing error near {e.Message}");
                 } catch(Exception e) {
-                    AddError(e);
+                    LogError(e);
                 }
                 return null;
             default:
-                AddError("incompatible inputs file format");
+                LogError("incompatible inputs file format");
                 return null;
             }
         }
@@ -309,7 +309,7 @@ namespace LambdaSharp.Tool.Cli {
                             settings.WorkingDirectory = Path.GetDirectoryName(argument);
                             settings.OutputDirectory = settings.WorkingDirectory;
                         } else {
-                            AddError($"unrecognized argument: {argument}");
+                            LogError($"unrecognized argument: {argument}");
                             break;
                         }
                         if(moduleSource != null) {
@@ -435,7 +435,7 @@ namespace LambdaSharp.Tool.Cli {
                         } else if(argument.TryParseModuleDescriptor(out _, out _, out _, out _)) {
                             moduleReference = argument;
                         } else {
-                            AddError($"unrecognized argument: {argument}");
+                            LogError($"unrecognized argument: {argument}");
                             break;
                         }
                         if(moduleSource != null) {
@@ -512,7 +512,7 @@ namespace LambdaSharp.Tool.Cli {
                     selector
                 );
             } catch(Exception e) {
-                AddError(e);
+                LogError(e);
                 return false;
             }
         }
@@ -561,7 +561,7 @@ namespace LambdaSharp.Tool.Cli {
                     enableXRayTracing
                 );
             } catch(Exception e) {
-                AddError(e);
+                LogError(e);
                 return false;
             }
         }

@@ -86,7 +86,7 @@ namespace LambdaSharp.Tool.Cli {
                     awsAccountId = awsAccountId ?? response.Account;
                     awsRegion = awsRegion ?? stsClient.Config.RegionEndpoint.SystemName ?? "us-east-1";
                 } catch(Exception e) {
-                    AddError("unable to determine the AWS Account Id and Region", e);
+                    LogError("unable to determine the AWS Account Id and Region", e);
                     return null;
                 }
             }
@@ -148,9 +148,9 @@ namespace LambdaSharp.Tool.Cli {
                 if(requireDeploymentTier) {
                     tier = tierOption.Value() ?? Environment.GetEnvironmentVariable("LAMBDASHARP_TIER");
                     if(string.IsNullOrEmpty(tier)) {
-                        AddError("missing deployment tier name");
+                        LogError("missing deployment tier name");
                     } else if(tier == "Default") {
-                        AddError("deployment tier cannot be 'Default' because it is a reserved name");
+                        LogError("deployment tier cannot be 'Default' because it is a reserved name");
                     }
                 }
 
@@ -202,7 +202,7 @@ namespace LambdaSharp.Tool.Cli {
                         S3Client = s3Client
                     };
                 } catch(AmazonClientException e) when(e.Message == "No RegionEndpoint or ServiceURL configured") {
-                    AddError("AWS profile configuration is missing a region specifier");
+                    LogError("AWS profile configuration is missing a region specifier");
                     return null;
                 }
             };
@@ -230,7 +230,7 @@ namespace LambdaSharp.Tool.Cli {
             }
         failed:
             var pairs = Enum.GetValues(typeof(T)).Cast<int>().Zip(Enum.GetNames(typeof(T)).Cast<string>(), (value, name) => $"{value}={name.ToLowerInvariant()}");
-            AddError($"value for {option.LongName} must be one of {string.Join(", ", pairs)}");
+            LogError($"value for {option.LongName} must be one of {string.Join(", ", pairs)}");
             result = defaultvalue;
             return false;
         }
@@ -251,11 +251,11 @@ namespace LambdaSharp.Tool.Cli {
                         return;
                     }
                     if(!VersionInfo.TryParse(lambdaSharpToolVersionText, out var lambdaSharpToolVersion)) {
-                        AddError("LambdaSharp CLI is not configured propertly", new LambdaSharpToolConfigException(settings.ToolProfile));
+                        LogError("LambdaSharp CLI is not configured propertly", new LambdaSharpToolConfigException(settings.ToolProfile));
                         return;
                     }
                     if((settings.ToolVersion > lambdaSharpToolVersion) && !settings.ToolVersion.IsCompatibleWith(lambdaSharpToolVersion)) {
-                        AddError($"LambdaSharp CLI configuration is not up-to-date (current: {settings.ToolVersion}, existing: {lambdaSharpToolVersion})", new LambdaSharpToolConfigException(settings.ToolProfile));
+                        LogError($"LambdaSharp CLI configuration is not up-to-date (current: {settings.ToolVersion}, existing: {lambdaSharpToolVersion})", new LambdaSharpToolConfigException(settings.ToolProfile));
                         return;
                     }
                     settings.DeploymentBucketName = settings.DeploymentBucketName ?? GetLambdaSharpToolSetting("DeploymentBucketName");
@@ -329,13 +329,13 @@ namespace LambdaSharp.Tool.Cli {
                 process.WaitForExit();
                 if(process.ExitCode != 0) {
                     if(showWarningOnFailure) {
-                        AddWarning($"unable to get git-sha `git rev-parse HEAD` failed with exit code = {process.ExitCode}");
+                        LogWarn($"unable to get git-sha `git rev-parse HEAD` failed with exit code = {process.ExitCode}");
                     }
                     gitSha = null;
                 }
             } catch {
                 if(showWarningOnFailure) {
-                    AddWarning("git is not installed; skipping git-sha detection");
+                    LogWarn("git is not installed; skipping git-sha detection");
                 }
             }
             return gitSha;
@@ -359,13 +359,13 @@ namespace LambdaSharp.Tool.Cli {
                 process.WaitForExit();
                 if(process.ExitCode != 0) {
                     if(showWarningOnFailure) {
-                        AddWarning($"unable to get git branch `git rev-parse --abbrev-ref HEAD` failed with exit code = {process.ExitCode}");
+                        LogWarn($"unable to get git branch `git rev-parse --abbrev-ref HEAD` failed with exit code = {process.ExitCode}");
                     }
                     gitBranch = null;
                 }
             } catch {
                 if(showWarningOnFailure) {
-                    AddWarning("git is not installed; skipping git branch detection");
+                    LogWarn("git is not installed; skipping git branch detection");
                 }
             }
             return gitBranch;

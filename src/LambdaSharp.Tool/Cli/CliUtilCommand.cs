@@ -68,7 +68,7 @@ namespace LambdaSharp.Tool.Cli {
                         // determine destination folder
                         var lambdaSharpFolder = System.Environment.GetEnvironmentVariable("LAMBDASHARP");
                         if(lambdaSharpFolder == null) {
-                            AddError("LAMBDASHARP environment variable is not defined");
+                            LogError("LAMBDASHARP environment variable is not defined");
                             return;
                         }
                         var destinationZipLocation = Path.Combine(lambdaSharpFolder, "src/LambdaSharp.Tool/Resources/CloudFormationResourceSpecification.json.gz");
@@ -186,7 +186,7 @@ namespace LambdaSharp.Tool.Cli {
                                 Console.WriteLine($"* deleted '{logGroup.LogGroupName}'");
                                 ++deletedLogGroups;
                             } catch {
-                                AddError($"could not delete '{logGroup.LogGroupName}'");
+                                LogError($"could not delete '{logGroup.LogGroupName}'");
                             }
                         }
                     } else {
