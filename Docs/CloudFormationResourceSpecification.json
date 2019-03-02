@@ -2276,7 +2276,7 @@
           "Type": "List"
         },
         "DefaultCacheBehavior": {
-          "Required": false,
+          "Required": true,
           "Type": "DefaultCacheBehavior"
         },
         "DefaultRootObject": {
@@ -2301,7 +2301,7 @@
         },
         "Origins": {
           "ItemType": "Origin",
-          "Required": false,
+          "Required": true,
           "Type": "List"
         },
         "PriceClass": {
@@ -2587,7 +2587,6 @@
     "AWS::CloudWatch::Alarm.Metric": {
       "Properties": {
         "Dimensions": {
-          "DuplicatesAllowed": true,
           "ItemType": "Dimension",
           "Required": false,
           "Type": "List"
@@ -3698,7 +3697,7 @@
       "Properties": {
         "ExternalId": {
           "PrimitiveType": "String",
-          "Required": false
+          "Required": true
         },
         "SnsCallerArn": {
           "PrimitiveType": "String",
@@ -4649,14 +4648,11 @@
         }
       }
     },
-    "AWS::EC2::LaunchTemplate.CapacityReservationPreference": {
-      "PrimitiveType": "String"
-    },
     "AWS::EC2::LaunchTemplate.CapacityReservationSpecification": {
       "Properties": {
         "CapacityReservationPreference": {
-          "Required": false,
-          "Type": "CapacityReservationPreference"
+          "PrimitiveType": "String",
+          "Required": false
         },
         "CapacityReservationTarget": {
           "Required": false,
@@ -15772,7 +15768,6 @@
           "Required": false
         },
         "Metrics": {
-          "DuplicatesAllowed": false,
           "ItemType": "MetricDataQuery",
           "Required": false,
           "Type": "List"
@@ -16058,7 +16053,7 @@
         },
         "Version": {
           "PrimitiveType": "String",
-          "Required": false
+          "Required": true
         }
       }
     },
@@ -17743,7 +17738,7 @@
       "Properties": {
         "CidrBlock": {
           "PrimitiveType": "String",
-          "Required": true
+          "Required": false
         },
         "Egress": {
           "PrimitiveType": "Boolean",
@@ -24198,8 +24193,9 @@
     "AWS::ServiceDiscovery::Instance": {
       "Properties": {
         "InstanceAttributes": {
-          "PrimitiveType": "Map",
-          "Required": true
+          "PrimitiveItemType": "String",
+          "Required": true,
+          "Type": "Map"
         },
         "InstanceId": {
           "PrimitiveType": "String",
@@ -24603,6 +24599,36 @@
           "ItemType": "Tag",
           "Required": false,
           "Type": "List"
+        }
+      }
+    },
+    "AWS::SSM::MaintenanceWindowTarget": {
+      "Properties": {
+        "Description": {
+          "PrimitiveType": "String",
+          "Required": false
+        },
+        "Name": {
+          "PrimitiveType": "String",
+          "Required": false
+        },
+        "OwnerInformation": {
+          "PrimitiveType": "String",
+          "Required": false
+        },
+        "ResourceType": {
+          "PrimitiveType": "String",
+          "Required": true
+        },
+        "Targets": {
+          "ItemType": "Target",
+          "PrimitiveType": "String",
+          "Required": true,
+          "Type": "List"
+        },
+        "WindowId": {
+          "PrimitiveType": "String",
+          "Required": true
         }
       }
     },
