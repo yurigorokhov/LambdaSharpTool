@@ -1,7 +1,7 @@
 ![λ#](../../Docs/LambdaSharpLogo.png)
 
 # Module: LambdaSharp.S3.IO
-Version 0.5
+Version 0.5.0.1
 
 ## Overview
 
