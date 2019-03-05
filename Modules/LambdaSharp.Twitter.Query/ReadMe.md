@@ -1,4 +1,7 @@
-![λ#](LambdaSharp_v2_small.png)
+![λ#](../../Docs/LambdaSharpLogo.png)
+
+# Module: LambdaSharp.S3.IO
+Version 0.5
 
 # Module: LambdaSharp.Twitter.Query
 _Version:_ 0.5

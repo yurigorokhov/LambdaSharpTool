@@ -1,4 +1,4 @@
-![λ#](LambdaSharp_v2_small.png)
+![λ#](../../Docs/LambdaSharpLogo.png)
 
 # Module: LambdaSharp.S3.IO
 Version 0.5
@@ -13,9 +13,9 @@ __Topics__
 * [Outputs](#outputs)
 
 ## Resource Types
-1. [LambdaSharp::S3::EmptyBucket](LambdaSharp-S3-EmptyBucket.md)
-1. [LambdaSharp::S3::Unzip](LambdaSharp-S3-Unzip.md)
-1. [LambdaSharp::S3::WriteJson](LambdaSharp-S3-WriteJson.md)
+1. [LambdaSharp::S3::EmptyBucket](Docs/LambdaSharp-S3-EmptyBucket.md)
+1. [LambdaSharp::S3::Unzip](Docs/LambdaSharp-S3-Unzip.md)
+1. [LambdaSharp::S3::WriteJson](Docs/LambdaSharp-S3-WriteJson.md)
 
 ## Parameters
 

@@ -1,4 +1,4 @@
-![λ#](LambdaSharp_v2_small.png)
+![λ#](../../../Docs/LambdaSharpLogo.png)
 
 # LambdaSharp::S3::Unzip
 
