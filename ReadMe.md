@@ -114,10 +114,13 @@ namespace MySampleModule.MyFunction {
 1. [λ# Module Global Variables](Docs/Module-Global-Variables.md)
 1. [λ# Module IAM Short-hands](src/LambdaSharp.Tool/Resources/IAM-Mappings.yml)
 1. Modules
+    1. [LambdaSharp.Core](Modules/LambdaSharp.Core/ReadMe.md)
     1. [LambdaSharp.S3.IO](Modules/LambdaSharp.S3.IO/ReadMe.md)
+    1. [LambdaSharp.S3.Subscriber](Modules/LambdaSharp.S3.Subscriber/ReadMe.md)
     1. [LambdaSharp.Twitter.Query](Modules/LambdaSharp.Twitter.Query/ReadMe.md)
 1. Resource Types
     1. [LambdaSharp::S3::EmptyBucket](Modules/LambdaSharp.S3.IO/Docs/LambdaSharp-S3-EmptyBucket.md)
+    1. [LambdaSharp::S3::Subscription](Modules/LambdaSharp.S3.Subscriber/Docs/LambdaSharp-S3-Subscription.md)
     1. [LambdaSharp::S3::Unzip](Modules/LambdaSharp.S3.IO/Docs/LambdaSharp-S3-Unzip.md)
     1. [LambdaSharp::S3::WriteJson](Modules/LambdaSharp.S3.IO/Docs/LambdaSharp-S3-WriteJson.md)
 

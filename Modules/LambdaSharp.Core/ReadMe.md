@@ -5,7 +5,7 @@ Version 0.5.0.1
 
 ## Overview
 
-The `LambdaSharp.Core` module defines the core resources and resource types for deploying λ# modules.
+The `LambdaSharp.Core` module defines the core resources and resource types for deploying λ# modules. This module is included automatically by all λ# modules.
 
 __Topics__
 * [Resource Types](#resource-types)
