@@ -123,14 +123,14 @@ namespace LambdaSharp.Tool.Cli {
             var deploymentBucketNameOption = cmd.Option("--deployment-bucket-name <NAME>", "(test only) S3 Bucket name used to deploy modules (default: read from LambdaSharp CLI configuration)", CommandOptionType.SingleValue);
             var deploymentNotificationTopicOption = cmd.Option("--deployment-notifications-topic <ARN>", "(test only) SNS Topic for CloudFormation deployment notifications (default: read from LambdaSharp CLI configuration)", CommandOptionType.SingleValue);
             var moduleBucketNamesOption = cmd.Option("--module-bucket-names <NAMES>", "(test only) Comma-separated list of S3 Bucket names used to find modules (default: read from LambdaSharp CLI configuration)", CommandOptionType.SingleValue);
-            var runtimeVersionOption = cmd.Option("--core-version <VERSION>", "(test only) LambdaSharp Core version (default: read from deployment tier)", CommandOptionType.SingleValue);
+            var tierVersionOption = cmd.Option("--tier-version <VERSION>", "(test only) LambdaSharp tier version (default: read from deployment tier)", CommandOptionType.SingleValue);
             awsAccountIdOption.ShowInHelpText = false;
             awsRegionOption.ShowInHelpText = false;
             toolVersionOption.ShowInHelpText = false;
             deploymentBucketNameOption.ShowInHelpText = false;
             deploymentNotificationTopicOption.ShowInHelpText = false;
             moduleBucketNamesOption.ShowInHelpText = false;
-            runtimeVersionOption.ShowInHelpText = false;
+            tierVersionOption.ShowInHelpText = false;
             return async () => {
 
                 // initialize logging level
@@ -179,7 +179,7 @@ namespace LambdaSharp.Tool.Cli {
                     }
 
                     // initialize LambdaSharp deployment values
-                    var runtimeVersion = runtimeVersionOption.Value();
+                    var tierVersion = tierVersionOption.Value();
                     var deploymentBucketName = deploymentBucketNameOption.Value();
                     var deploymentNotificationTopic = deploymentNotificationTopicOption.Value();
                     var moduleBucketNames = moduleBucketNamesOption.Value()?.Split(',');
@@ -189,7 +189,7 @@ namespace LambdaSharp.Tool.Cli {
                         ToolVersion = Version,
                         ToolProfile = toolProfile,
                         ToolProfileExplicitlyProvided = toolProfileOption.HasValue(),
-                        CoreVersion = (runtimeVersion != null) ? VersionInfo.Parse(runtimeVersion) : null,
+                        TierVersion = (tierVersion != null) ? VersionInfo.Parse(tierVersion) : null,
                         Tier = tier,
                         AwsRegion = awsAccount.GetValueOrDefault().Region,
                         AwsAccountId = awsAccount.GetValueOrDefault().AccountId,
@@ -280,7 +280,7 @@ namespace LambdaSharp.Tool.Cli {
         }
 
         protected async Task PopulateRuntimeSettingsAsync(Settings settings) {
-            if((settings.CoreVersion == null) && (settings.Tier != null)) {
+            if((settings.TierVersion == null) && (settings.Tier != null)) {
                 try {
 
                     // check version of base LambadSharp module
@@ -289,9 +289,11 @@ namespace LambdaSharp.Tool.Cli {
                     });
                     var deployedOutputs = describe.Stacks.FirstOrDefault()?.Outputs;
                     if(deployedOutputs != null) {
-                        var deployed = deployedOutputs.FirstOrDefault(output => output.OutputKey == "Module")?.OutputValue;
+
+                        // read core module version
+                        var deployedModule = deployedOutputs.FirstOrDefault(output => output.OutputKey == "Module")?.OutputValue;
                         if(
-                            deployed.TryParseModuleDescriptor(
+                            deployedModule.TryParseModuleDescriptor(
                                 out string deployedOwner,
                                 out string deployedName,
                                 out VersionInfo deployedVersion,
@@ -300,9 +302,11 @@ namespace LambdaSharp.Tool.Cli {
                             && (deployedOwner == "LambdaSharp")
                             && (deployedName == "Core")
                         ) {
-                            settings.CoreVersion = deployedVersion;
-                            return;
+                            settings.TierVersion = deployedVersion;
                         }
+
+                        // read core module default secret key
+                        settings.TierDefaultSecretKey = deployedOutputs.FirstOrDefault(output => output.OutputKey == "DefaultSecretKey")?.OutputValue;
                     }
                 } catch(AmazonCloudFormationException) {
 

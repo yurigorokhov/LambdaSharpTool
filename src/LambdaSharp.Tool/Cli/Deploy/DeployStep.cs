@@ -83,16 +83,16 @@ namespace LambdaSharp.Tool.Cli.Deploy {
             }
 
             // check that the LambdaSharp Core & CLI versions match
-            if(Settings.CoreVersion == null) {
+            if(Settings.TierVersion == null) {
 
                 // core module doesn't expect a deployment tier to exist
                 if(!forceDeploy && manifest.RuntimeCheck) {
-                    LogError("could not determine the LambdaSharp Core version; use --force-deploy to proceed anyway", new LambdaSharpDeploymentTierSetupException(Settings.Tier));
+                    LogError("could not determine the LambdaSharp tier version; use --force-deploy to proceed anyway", new LambdaSharpDeploymentTierSetupException(Settings.Tier));
                     return false;
                 }
-            } else if(!Settings.ToolVersion.IsCompatibleWith(Settings.CoreVersion)) {
+            } else if(!Settings.ToolVersion.IsCompatibleWith(Settings.TierVersion)) {
                 if(!forceDeploy) {
-                    LogError($"LambdaSharp CLI (v{Settings.ToolVersion}) and Core (v{Settings.CoreVersion}) versions do not match; use --force-deploy to proceed anyway");
+                    LogError($"LambdaSharp CLI (v{Settings.ToolVersion}) and Core (v{Settings.TierVersion}) versions do not match; use --force-deploy to proceed anyway");
                     return false;
                 }
             }

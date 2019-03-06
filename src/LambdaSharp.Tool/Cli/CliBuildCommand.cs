@@ -81,75 +81,7 @@ namespace LambdaSharp.Tool.Cli {
                 LogError("cannot find parameters file");
                 return null;
             }
-            switch(Path.GetExtension(filename).ToLowerInvariant()) {
-            case ".yml":
-            case ".yaml":
-                try {
-                    var inputs = new DeserializerBuilder()
-                        .WithNamingConvention(new PascalCaseNamingConvention())
-                        .Build()
-                        .Deserialize<Dictionary<string, object>>(File.ReadAllText(filename));
-
-                    // resolve 'alias/' key names to key arns
-                    if(inputs.TryGetValue("Secrets", out var keys)) {
-                        if(keys is string key) {
-                            inputs["Secrets"] = key.Split(',').Select(item => ConvertAliasToKeyArn(item.Trim())).ToList();
-                        } else if(keys is IList<object> list) {
-                            inputs["Secrets"] = list.Select(item => ConvertAliasToKeyArn(item as string)).ToList();
-                        }
-
-                        // assume key name is an alias and resolve it to its ARN
-                        string ConvertAliasToKeyArn(string keyId) {
-                            if(keyId == null) {
-                                return null;
-                            }
-                            if(keyId.StartsWith("arn:")) {
-                                return keyId;
-                            }
-                            if(keyId.StartsWith("alias/", StringComparison.Ordinal)) {
-                                try {
-                                    return settings.KmsClient.DescribeKeyAsync(keyId).Result.KeyMetadata.Arn;
-                                } catch(Exception e) {
-                                    LogError($"failed to resolve key alias: {keyId}", e);
-                                    return null;
-                                }
-                            }
-                            try {
-                                return settings.KmsClient.DescribeKeyAsync($"alias/{keyId}").Result.KeyMetadata.Arn;
-                            } catch(Exception e) {
-                                LogError($"failed to resolve key alias: {keyId}", e);
-                                return null;
-                            }
-                        }
-                    }
-
-                    // create final dictionary of input values
-                    var result = new Dictionary<string, string>();
-                    foreach(var input in inputs) {
-                        var key = input.Key.Replace("::", "");
-                        switch(input.Value) {
-                        case string text:
-                            result.Add(key, text);
-                            break;
-                        case IEnumerable values when values.Cast<object>().All(value => value is string):
-                            result.Add(key, string.Join(",", values.OfType<string>()));
-                            break;
-                        default:
-                            LogError($"parameter '{input.Key}' have an invalid value");
-                            break;
-                        }
-                    }
-                    return result;
-                } catch(YamlDotNet.Core.YamlException e) {
-                    LogError($"parsing error near {e.Message}");
-                } catch(Exception e) {
-                    LogError(e);
-                }
-                return null;
-            default:
-                LogError("incompatible inputs file format");
-                return null;
-            }
+            return new ParameterFileReader(settings, filename).ReadInputParametersFiles();
         }
 
         //--- Methods ---
@@ -398,18 +330,6 @@ namespace LambdaSharp.Tool.Cli {
                         dryRun = value;
                     }
 
-                    // reading module inputs
-                    var inputs = new Dictionary<string, string>();
-                    if(parametersFileOption.HasValue()) {
-                        inputs = ReadInputParametersFiles(settings, parametersFileOption.Value());
-                        if(HasErrors) {
-                            return;
-                        }
-                    }
-                    if(HasErrors) {
-                        return;
-                    }
-
                     // check if one or more arguments have been specified
                     var arguments = publishedModulesArgument.Values.Any()
                         ? publishedModulesArgument.Values
@@ -472,7 +392,7 @@ namespace LambdaSharp.Tool.Cli {
                                 alternativeNameOption.Value(),
                                 allowDataLossOption.HasValue(),
                                 protectStackOption.HasValue(),
-                                inputs,
+                                parametersFileOption.Value(),
                                 forceDeployOption.HasValue(),
                                 promptAllParametersOption.HasValue(),
                                 promptsAsErrorsOption.HasValue(),
@@ -533,7 +453,7 @@ namespace LambdaSharp.Tool.Cli {
             string instanceName,
             bool allowDataLoos,
             bool protectStack,
-            Dictionary<string, string> inputs,
+            string parametersFilename,
             bool forceDeploy,
             bool promptAllParameters,
             bool promptsAsErrors,
@@ -548,13 +468,22 @@ namespace LambdaSharp.Tool.Cli {
                 if(HasErrors) {
                     return false;
                 }
+
+                // reading module parameters
+                var parameters = new Dictionary<string, string>();
+                if(parametersFilename != null) {
+                    parameters = ReadInputParametersFiles(settings, parametersFilename);
+                }
+                if(HasErrors) {
+                    return false;
+                }
                 return await new DeployStep(settings, moduleReference).DoAsync(
                     dryRun,
                     moduleReference,
                     instanceName,
                     allowDataLoos,
                     protectStack,
-                    inputs,
+                    parameters,
                     forceDeploy,
                     promptAllParameters,
                     promptsAsErrors,

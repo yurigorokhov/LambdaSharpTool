@@ -103,8 +103,9 @@ namespace LambdaSharp.Tool {
         public VersionInfo ToolVersion { get; set; }
         public string ToolProfile { get; set; }
         public bool ToolProfileExplicitlyProvided { get; set; }
-        public VersionInfo CoreVersion { get; set; }
         public string Tier { get; set; }
+        public VersionInfo TierVersion { get; set; }
+        public string TierDefaultSecretKey { get; set; }
         public string AwsRegion { get; set; }
         public string AwsAccountId { get; set; }
         public string DeploymentBucketName { get; set; }
