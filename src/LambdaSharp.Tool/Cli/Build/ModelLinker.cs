@@ -103,11 +103,11 @@ namespace LambdaSharp.Tool.Cli.Build {
                         environment["MODULE_INFO"] = builder.Info;
                         environment["LAMBDA_NAME"] = function.FullName;
                         environment["LAMBDA_RUNTIME"] = function.Function.Runtime;
-                        if(_builder.TryGetItem("Module::DefaultSecretKey", out var _)) {
-                            environment["DEFAULTSECRETKEY"] = FnRef("Module::DefaultSecretKey");
-                        }
                         if(function.HasDeadLetterQueue && _builder.TryGetItem("Module::DeadLetterQueue", out var _))  {
                             environment["DEADLETTERQUEUE"] = FnRef("Module::DeadLetterQueue");
+                        }
+                        if(_builder.TryGetItem("Module::DefaultSecretKey", out var _)) {
+                            environment["DEFAULTSECRETKEY"] = FnRef("Module::DefaultSecretKey");
                         }
 
                         // add all items scoped to this function
