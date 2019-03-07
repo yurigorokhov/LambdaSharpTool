@@ -27,6 +27,8 @@ using System.Threading.Tasks;
 using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
 using LambdaSharp.Tool.Model;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace LambdaSharp.Tool.Cli.Publish {
 
@@ -36,7 +38,7 @@ namespace LambdaSharp.Tool.Cli.Publish {
         public PublishStep(Settings settings, string sourceFilename) : base(settings, sourceFilename) { }
 
         //--- Methods---
-        public async Task<string> DoAsync(string cloudformationFile, bool forcePublish) {
+        public async Task<string> DoAsync(string cloudformationFile, bool forcePublish, bool publishToServerlessApplicationRepository) {
 
             // make sure there is a deployment bucket
             if(Settings.DeploymentBucketName == null) {
@@ -57,7 +59,33 @@ namespace LambdaSharp.Tool.Cli.Publish {
             }
 
             // publish module
-            return await new ModelPublisher(Settings, cloudformationFile).PublishAsync(manifest, forcePublish);
+            return await new ModelPublisher(Settings, cloudformationFile).PublishAsync(manifest, forcePublish, publishToServerlessApplicationRepository );
         }
+
+        public string ConvertFileToServerlessApplicationRepositoryFormat(string cloudformationFile) {
+            var doc = JObject.Parse(File.ReadAllText(cloudformationFile));
+
+            // add SAM transform
+            doc.Property("AWSTemplateFormatVersion").AddAfterSelf(new JProperty("Transform", JToken.FromObject("AWS::Serverless-2016-10-31")));
+
+            // remove 'DeploymentBucketName' parameter
+            doc.SelectToken("$.Parameters.DeploymentBucketName").Parent.Remove();
+            doc.SelectToken("$.Metadata.AWS::CloudFormation::Interface.ParameterLabels.DeploymentBucketName").Parent.Remove();
+            doc.SelectToken("$.Metadata.AWS::CloudFormation::Interface.ParameterGroups[*].Parameters[?(@ == 'DeploymentBucketName')]").Remove();
+
+            // replace all '!Ref DeploymentBucketName' occurrences with deployment bucket name
+            doc.Descendants()
+                .OfType<JObject>()
+                .Where(obj =>
+                    (obj.Property("Ref")?.Value is JValue value)
+                    && (value.Value is string text)
+                    && (text == "DeploymentBucketName")
+                )
+                .ToList()
+                .ForEach(obj => obj.Replace(JToken.FromObject(Settings.DeploymentBucketName)));
+
+            // return converted JSON document
+            return doc.ToString(Formatting.Indented);
+       }
     }
 }

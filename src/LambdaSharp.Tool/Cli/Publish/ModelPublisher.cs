@@ -27,6 +27,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
+using Amazon.ServerlessApplicationRepository.Model;
 using LambdaSharp.Tool.Internal;
 using LambdaSharp.Tool.Model;
 using Newtonsoft.Json;
@@ -47,7 +48,7 @@ namespace LambdaSharp.Tool.Cli.Publish {
         }
 
         //--- Methods ---
-        public async Task<string> PublishAsync(ModuleManifest manifest, bool forcePublish) {
+        public async Task<string> PublishAsync(ModuleManifest manifest, bool forcePublish, bool publishToServerlessApplicationRepository) {
             Console.WriteLine($"Publishing module: {manifest.GetFullName()}");
             _forcePublish = forcePublish;
             _changesDetected = false;
@@ -93,6 +94,25 @@ namespace LambdaSharp.Tool.Cli.Publish {
             // upload assets
             for(var i = 0; i < manifest.Assets.Count; ++i) {
                 manifest.Assets[i] = await UploadPackageAsync(manifest, manifest.Assets[i], "asset");
+            }
+
+            //
+            if(publishToServerlessApplicationRepository) {
+
+                // TODO (2019-03-07, bjorg): to be continued...
+
+                // find
+                var list = new List<string>();
+                var listRequest = new ListApplicationsRequest();
+                do {
+                    var listResponse = await Settings.SarClient.ListApplicationsAsync(listRequest);
+                    listRequest.NextToken = listResponse.NextToken;
+                } while(listRequest.NextToken != null);
+
+                await Settings.SarClient.GetApplicationAsync(new GetApplicationRequest {
+
+                });
+                return null;
             }
 
             // upload CloudFormation template

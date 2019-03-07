@@ -76,6 +76,9 @@ namespace LambdaSharp.Tool.Cli {
         public static CommandOption AddForcePublishOption(CommandLineApplication cmd)
             => cmd.Option("--force-publish", "(optional) Publish modules and their assets even when no changes were detected", CommandOptionType.NoValue);
 
+        public static CommandOption AddServerlessRepositoryOption(CommandLineApplication cmd)
+            => cmd.Option("--serverless-repo|-sar", "(optional) Publish to AWS Serverless Application Repository", CommandOptionType.NoValue);
+
         public static Dictionary<string, string> ReadInputParametersFiles(Settings settings, string filename) {
             if(!File.Exists(filename)) {
                 LogError("cannot find parameters file");
@@ -178,6 +181,7 @@ namespace LambdaSharp.Tool.Cli {
 
                 // publish options
                 var forcePublishOption = AddForcePublishOption(cmd);
+                var serverlessApplicationRepositoryOption = AddServerlessRepositoryOption(cmd);
 
                 // build options
                 var compiledModulesArgument = cmd.Argument("<NAME>", "(optional) Path to assets folder or module definition/folder (default: Module.yml)", multipleValues: true);
@@ -265,7 +269,11 @@ namespace LambdaSharp.Tool.Cli {
                             }
                         }
                         if(dryRun == null) {
-                            if(await PublishStepAsync(settings, forcePublishOption.HasValue()) == null) {
+                            if(await PublishStepAsync(
+                                settings,
+                                forcePublishOption.HasValue(),
+                                serverlessApplicationRepositoryOption.HasValue()
+                            ) == null) {
                                 break;
                             }
                         }
@@ -291,6 +299,7 @@ namespace LambdaSharp.Tool.Cli {
 
                 // publish options
                 var forcePublishOption = AddForcePublishOption(cmd);
+                var serverlessApplicationRepositoryOption = AddServerlessRepositoryOption(cmd);
 
                 // build options
                 var skipAssemblyValidationOption = AddSkipAssemblyValidationOption(cmd);
@@ -380,7 +389,10 @@ namespace LambdaSharp.Tool.Cli {
                         }
                         if(dryRun == null) {
                             if(moduleReference == null) {
-                                moduleReference = await PublishStepAsync(settings, forcePublishOption.HasValue());
+                                moduleReference = await PublishStepAsync(settings,
+                                    forcePublishOption.HasValue(),
+                                    serverlessApplicationRepositoryOption.HasValue()
+                                );
                                 if(moduleReference == null) {
                                     break;
                                 }
@@ -437,13 +449,13 @@ namespace LambdaSharp.Tool.Cli {
             }
         }
 
-        public async Task<string> PublishStepAsync(Settings settings, bool forcePublish) {
+        public async Task<string> PublishStepAsync(Settings settings, bool forcePublish, bool publishToServerlessApplicationRepository) {
             await PopulateToolSettingsAsync(settings);
             if(HasErrors) {
                 return null;
             }
             var cloudformationFile = Path.Combine(settings.OutputDirectory, "cloudformation.json");
-            return await new PublishStep(settings, cloudformationFile).DoAsync(cloudformationFile, forcePublish);
+            return await new PublishStep(settings, cloudformationFile).DoAsync(cloudformationFile, forcePublish, publishToServerlessApplicationRepository);
         }
 
         public async Task<bool> DeployStepAsync(

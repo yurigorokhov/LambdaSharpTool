@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Amazon;
 using Amazon.CloudFormation;
@@ -33,11 +34,11 @@ using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.SecurityToken;
 using Amazon.SecurityToken.Model;
+using Amazon.ServerlessApplicationRepository;
 using Amazon.SimpleSystemsManagement;
 using McMaster.Extensions.CommandLineUtils;
 using LambdaSharp.Tool.Internal;
 using LambdaSharp.Tool.Model;
-using System.Text;
 
 namespace LambdaSharp.Tool.Cli {
 
@@ -161,6 +162,7 @@ namespace LambdaSharp.Tool.Cli {
                     IAmazonCloudFormation cfClient = null;
                     IAmazonKeyManagementService kmsClient = null;
                     IAmazonS3 s3Client = null;
+                    IAmazonServerlessApplicationRepository sarClient = null;
                     if(requireAwsProfile) {
                         awsAccount = await InitializeAwsProfile(
                             awsProfileOption.Value(),
@@ -173,6 +175,7 @@ namespace LambdaSharp.Tool.Cli {
                         cfClient = new AmazonCloudFormationClient();
                         kmsClient = new AmazonKeyManagementServiceClient();
                         s3Client = new AmazonS3Client();
+                        sarClient = new AmazonServerlessApplicationRepositoryClient();
                     }
                     if(HasErrors) {
                         return null;
@@ -199,7 +202,8 @@ namespace LambdaSharp.Tool.Cli {
                         SsmClient = ssmClient,
                         CfnClient = cfClient,
                         KmsClient = kmsClient,
-                        S3Client = s3Client
+                        S3Client = s3Client,
+                        SarClient = sarClient
                     };
                 } catch(AmazonClientException e) when(e.Message == "No RegionEndpoint or ServiceURL configured") {
                     LogError("AWS profile configuration is missing a region specifier");
