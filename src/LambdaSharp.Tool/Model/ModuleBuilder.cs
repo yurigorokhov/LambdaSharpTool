@@ -926,7 +926,8 @@ namespace LambdaSharp.Tool.Model {
                 sources: sources ?? new AFunctionSource[0],
                 condition: null,
                 pragmas: pragmas ?? new object[0],
-                function: resource
+                function: resource,
+                dependsOn: null
             );
             AddItem(function);
 
@@ -1016,7 +1017,8 @@ namespace LambdaSharp.Tool.Model {
             IList<object> pragmas,
             string timeout,
             string memory,
-            string code
+            string code,
+            IList<string> dependsOn
         ) {
 
             // create function resource
@@ -1051,7 +1053,8 @@ namespace LambdaSharp.Tool.Model {
                 sources: sources ?? new AFunctionSource[0],
                 condition: condition,
                 pragmas: pragmas ?? new object[0],
-                function: resource
+                function: resource,
+                dependsOn: dependsOn
             );
             AddItem(function);
             return function;
