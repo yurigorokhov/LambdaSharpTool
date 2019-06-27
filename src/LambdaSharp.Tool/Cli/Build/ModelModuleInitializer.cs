@@ -393,7 +393,8 @@ namespace LambdaSharp.Tool.Cli.Build {
                     encryptionContext: null
                 );
             }
-            if(TryGetModuleVariable("DefaultSecretKey", out var defaultSecretKeyVariable, out var defaultSecretKeyCondition)) {
+            var hasDefaultSecrteKey = TryGetModuleVariable("DefaultSecretKey", out var defaultSecretKeyVariable, out var defaultSecretKeyCondition);
+            if(hasDefaultSecrteKey) {
                 _builder.AddVariable(
                     parent: moduleItem,
                     name: "DefaultSecretKey",
@@ -435,7 +436,16 @@ namespace LambdaSharp.Tool.Cli.Build {
                 parent: moduleItem,
                 name: "DecryptSecretFunction",
                 description: "Module secret decryption function",
-                environment: null,
+                environment: hasDefaultSecrteKey
+                    ? new Dictionary<string, object> {
+                        ["MODULE_ROLE_SECRETSPOLICY"] = FnIf("Module::Role::SecretsPolicy::Condition", FnRef("Module::Role::SecretsPolicy"), FnRef("AWS::NoValue")),
+                        ["STR_MODULE_ROLE_DEFAULTSECRETKEYPOLICY"] = (defaultSecretKeyCondition != null)
+                            ? FnIf(defaultSecretKeyCondition, FnRef("Module::Role::DefaultSecretKeyPolicy"), FnRef("AWS::NoValue"))
+                            : FnRef("Module::Role::DefaultSecretKeyPolicy")
+                    }
+                    : new Dictionary<string, object> {
+                        ["MODULE_ROLE_SECRETSPOLICY"] = FnIf("Module::Role::SecretsPolicy::Condition", FnRef("Module::Role::SecretsPolicy"), FnRef("AWS::NoValue"))
+                    },
                 sources: null,
                 condition: null,
                 pragmas: new[] {
@@ -445,7 +455,8 @@ namespace LambdaSharp.Tool.Cli.Build {
                 },
                 timeout: "30",
                 memory: "128",
-                code: DecryptSecretFunctionCode
+                code: DecryptSecretFunctionCode,
+                dependsOn: null
             ).DiscardIfNotReachable = true;
 
             // add LambdaSharp Deployment Settings
