@@ -393,8 +393,8 @@ namespace LambdaSharp.Tool.Cli.Build {
                     encryptionContext: null
                 );
             }
-            var hasDefaultSecrteKey = TryGetModuleVariable("DefaultSecretKey", out var defaultSecretKeyVariable, out var defaultSecretKeyCondition);
-            if(hasDefaultSecrteKey) {
+            var hasDefaultSecretKey = TryGetModuleVariable("DefaultSecretKey", out var defaultSecretKeyVariable, out var defaultSecretKeyCondition);
+            if(hasDefaultSecretKey) {
                 _builder.AddVariable(
                     parent: moduleItem,
                     name: "DefaultSecretKey",
@@ -432,20 +432,25 @@ namespace LambdaSharp.Tool.Cli.Build {
             }
 
             // add decryption function for secret parameters and values
+            var decryptSecretFunctionEnvironment = new Dictionary<string, object> {
+                ["MODULE_ROLE_SECRETSPOLICY"] = FnIf(
+                    "Module::Role::SecretsPolicy::Condition",
+                    FnRef("Module::Role::SecretsPolicy"),
+                    FnRef("AWS::NoValue")
+                )
+            };
+            if(hasDefaultSecretKey && (defaultSecretKeyCondition != null)) {
+                decryptSecretFunctionEnvironment["MODULE_ROLE_DEFAULTSECRETKEYPOLICY"] = FnIf(
+                    defaultSecretKeyCondition,
+                    FnRef("Module::Role::DefaultSecretKeyPolicy"),
+                    FnRef("AWS::NoValue")
+                );
+            }
             _builder.AddInlineFunction(
                 parent: moduleItem,
                 name: "DecryptSecretFunction",
                 description: "Module secret decryption function",
-                environment: hasDefaultSecrteKey
-                    ? new Dictionary<string, object> {
-                        ["MODULE_ROLE_SECRETSPOLICY"] = FnIf("Module::Role::SecretsPolicy::Condition", FnRef("Module::Role::SecretsPolicy"), FnRef("AWS::NoValue")),
-                        ["STR_MODULE_ROLE_DEFAULTSECRETKEYPOLICY"] = (defaultSecretKeyCondition != null)
-                            ? FnIf(defaultSecretKeyCondition, FnRef("Module::Role::DefaultSecretKeyPolicy"), FnRef("AWS::NoValue"))
-                            : FnRef("Module::Role::DefaultSecretKeyPolicy")
-                    }
-                    : new Dictionary<string, object> {
-                        ["MODULE_ROLE_SECRETSPOLICY"] = FnIf("Module::Role::SecretsPolicy::Condition", FnRef("Module::Role::SecretsPolicy"), FnRef("AWS::NoValue"))
-                    },
+                environment: decryptSecretFunctionEnvironment,
                 sources: null,
                 condition: null,
                 pragmas: new[] {
