@@ -119,6 +119,7 @@ echo "**********************"
 echo "*** Deploy Samples ***"
 echo "**********************"
 
+cd $LAMBDASHARP
 lash deploy \
     Samples/AlexaSample/bin/cloudformation.json \
     Samples/ApiSample/bin/cloudformation.json \
