@@ -74,26 +74,6 @@ if [ $? -ne 0 ]; then
     exit $?
 fi
 
-echo "*********************"
-echo "*** Build Samples ***"
-echo "*********************"
-
-cd $LAMBDASHARP/Samples
-lash build `find . -name "Module.yml"`
-if [ $? -ne 0 ]; then
-    exit $?
-fi
-
-echo "********************"
-echo "*** Build Demos ***"
-echo "********************"
-
-cd $LAMBDASHARP/Demos
-lash build `find . -name "Module.yml"`
-if [ $? -ne 0 ]; then
-    exit $?
-fi
-
 echo "************************"
 echo "*** Init LambdaSharp ***"
 echo "*************************"
@@ -114,6 +94,25 @@ if [ $? -ne 0 ]; then
     exit $?
 fi
 
+echo "*********************"
+echo "*** Build Samples ***"
+echo "*********************"
+
+cd $LAMBDASHARP/Samples
+lash build `find . -name "Module.yml"`
+if [ $? -ne 0 ]; then
+    exit $?
+fi
+
+echo "********************"
+echo "*** Build Demos ***"
+echo "********************"
+
+cd $LAMBDASHARP/Demos
+lash build `find . -name "Module.yml"`
+if [ $? -ne 0 ]; then
+    exit $?
+fi
 
 # Deploy all λ# Sample Modules
 echo "**********************"
