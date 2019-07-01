@@ -186,6 +186,17 @@ The [`ALambdaApiGatewayFunction`](xref:LambdaSharp.ApiGateway.ALambdaApiGatewayF
 
 ## Releases
 
+### (v0.6.0.3) - 2019-07-01
+
+#### New Features
+
+* Added `--decrypt` option to `lash encrypt`, which decrypts the supplied value before encrypting it again. Useful when changing secret keys.
+* Enhanced `lash tier coreservices` to also show nested stacks, but ignore them when using either the `--enable` or `--disable` options.
+
+#### Fixes
+
+* Fixed an issue where the IAM policy for using secret keys was not created/updated before the embedded `DecryptionSecret` function was invoked, leading to a CloudFormation failure.
+
 ### (v0.6.0.2) - 2019-06-26
 
 #### New Features
