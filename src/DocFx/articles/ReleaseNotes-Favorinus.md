@@ -186,6 +186,11 @@ The [`ALambdaApiGatewayFunction`](xref:LambdaSharp.ApiGateway.ALambdaApiGatewayF
 
 ## Releases
 
+### (v0.6.1) - 2019-07-01
+
+* Removed automatic dependency `DefaultSecretKey` to enable streamlined upgrade to v0.7.0.
+* Fixed a JSON schema issue when using `enum` property type.
+
 ### (v0.6.0.3) - 2019-07-01
 
 #### New Features
